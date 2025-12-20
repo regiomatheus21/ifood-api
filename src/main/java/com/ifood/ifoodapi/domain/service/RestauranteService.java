@@ -18,14 +18,14 @@ public class RestauranteService {
     private RestauranteRepository restauranteRepository;
     @Autowired
     private CozinhaRepository cozinhaRepository;
-    public void adicionar(Restaurante restaurante) {
+    public Restaurante adicionar(Restaurante restaurante) {
         Cozinha cozinha = cozinhaRepository.buscar(restaurante.getCozinha().getId());
         if(cozinha!=null){
             restaurante.setCozinha(cozinha);
         }else{
             throw new EntidadeNaoEncontradaException(String.format("Cozinha nao foi encontrada com esse id: %d",restaurante.getCozinha().getId()));
         }
-        restauranteRepository.salvar(restaurante);
+        return restauranteRepository.salvar(restaurante);
     }
 
     public void deletar(Long restauranteId) {
@@ -37,5 +37,9 @@ public class RestauranteService {
 
     public List<Restaurante> listar() {
         return restauranteRepository.listar();
+    }
+
+    public Restaurante buscar(Long restauranteId) {
+       return restauranteRepository.buscar(restauranteId);
     }
 }
