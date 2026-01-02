@@ -16,8 +16,8 @@ public class CozinhaService {
     @Autowired
     private CozinhaRepository cozinhaRepository;
 
-    public void adicionar(Cozinha cozinha) {
-        cozinhaRepository.salvar(cozinha);
+    public Cozinha salvar(Cozinha cozinha) {
+       return cozinhaRepository.salvar(cozinha);
     }
 
     public void excluir(Long cozinhaId){
@@ -30,7 +30,7 @@ public class CozinhaService {
         }
     }
 
-    public Cozinha getById(Long cozinhaId) {
+    public Cozinha buscar(Long cozinhaId) {
         return cozinhaRepository.buscar(cozinhaId);
     }
 
