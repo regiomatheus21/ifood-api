@@ -7,14 +7,19 @@ import com.ifood.ifoodapi.domain.repository.CidadeRepository;
 import com.ifood.ifoodapi.domain.repository.EstadoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CidadeService {
     @Autowired
     private CidadeRepository cidadeRepository;
 
+    @Autowired
     private EstadoRepository estadoRepository;
+
     @Transactional
     public Cidade salvar(Cidade cidade) {
         Long estadoId = cidade.getEstado().getId();
@@ -26,5 +31,20 @@ public class CidadeService {
         }
         cidade.setEstado(estado);
         return cidadeRepository.salvar(cidade);
+    }
+
+    public Cidade buscar(Long cidadeId) {
+        return cidadeRepository.buscar(cidadeId);
+    }
+
+    public void excluir(Long cidadeId) {
+        Cidade cidade = cidadeRepository.buscar(cidadeId);
+        if (cidade != null){
+            cidadeRepository.remover(cidadeId);
+        }
+    }
+
+    public List<Cidade> listar() {
+        return cidadeRepository.listar();
     }
 }

@@ -4,21 +4,25 @@ import com.ifood.ifoodapi.domain.model.Estado;
 import com.ifood.ifoodapi.domain.repository.EstadoRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class EstadoRepositoryImpl implements EstadoRepository {
     @PersistenceContext
     private EntityManager maneger;
 
     @Override
+    @Transactional
     public Estado salvar(Estado estado) {
-        return null;
+        return maneger.merge(estado);
     }
 
     @Override
     public List<Estado> listar() {
-        return List.of();
+        return maneger.createQuery("From Estado",Estado.class).getResultList();
     }
 
     @Override
@@ -27,7 +31,9 @@ public class EstadoRepositoryImpl implements EstadoRepository {
     }
 
     @Override
+    @Transactional
     public void remover(Long id) {
+        maneger.remove(id);
 
     }
 }
