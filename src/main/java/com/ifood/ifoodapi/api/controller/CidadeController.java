@@ -52,6 +52,7 @@ public class CidadeController {
     @PutMapping("/{cidadeId}")
     public ResponseEntity<?> atualizar(@PathVariable Long cidadeId, @RequestBody Cidade cidade){
         try {
+          //  Cidade cidadeAtual1 = cidadeService.atualizar(cidadeId,cidade);
             Cidade cidadeAtual = cidadeService.buscar(cidadeId);
             if(cidadeAtual != null){
                 BeanUtils.copyProperties(cidade,cidadeAtual,"id");

@@ -6,11 +6,13 @@ import com.ifood.ifoodapi.domain.model.Estado;
 import com.ifood.ifoodapi.domain.repository.CidadeRepository;
 import com.ifood.ifoodapi.domain.repository.EstadoRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CidadeService {
@@ -23,28 +25,37 @@ public class CidadeService {
     @Transactional
     public Cidade salvar(Cidade cidade) {
         Long estadoId = cidade.getEstado().getId();
-        Estado estado = estadoRepository.buscar(estadoId);
-
-        if(estado == null){
+        Optional<Estado> estado =Optional.of(estadoRepository.buscar(estadoId));
+        if(!estado.isPresent()){
             throw new EntidadeNaoEncontradaException(
                     String.format("Nao existe cadastro de estado para esse id %d",estadoId));
         }
-        cidade.setEstado(estado);
-        return cidadeRepository.salvar(cidade);
+        cidade.setEstado(estado.get());
+        return cidadeRepository.save(cidade);
     }
 
     public Cidade buscar(Long cidadeId) {
-        return cidadeRepository.buscar(cidadeId);
+        return cidadeRepository.getReferenceById(cidadeId);
     }
 
     public void excluir(Long cidadeId) {
-        Cidade cidade = cidadeRepository.buscar(cidadeId);
-        if (cidade != null){
-            cidadeRepository.remover(cidadeId);
+       Optional<Cidade> cidade = Optional.of(cidadeRepository.getReferenceById(cidadeId));
+        if (cidade.isPresent()){
+            cidadeRepository.delete(cidade.get());
         }
     }
 
     public List<Cidade> listar() {
-        return cidadeRepository.listar();
+        return cidadeRepository.findAll();
     }
+
+//    public Cidade atualizar(Long cidadeId, Cidade cidade) {
+//        Optional<Cidade> cidadeAtual = Optional.ofNullable(cidadeRepository.buscar(cidadeId));
+//        if(cidadeAtual.isPresent()){
+//           BeanUtils.copyProperties(cidade,cidadeAtual,"id");
+//            Cidade cidadeAtualizada = cidadeRepository.salvar(cidadeAtual.get());
+//            return cidadeAtualizada;
+//
+//        }
+//    }
 }

@@ -18,15 +18,16 @@ public class EstadoService {
     private EstadoRepository estadoRepository;
 
     public List<Estado> listar() {
-       return estadoRepository.listar();
+       return estadoRepository.findAll();
     }
 
     public Estado salvar(Estado estado) {
-        return estadoRepository.salvar(estado);
+        return estadoRepository.save(estado);
     }
     public void excluir(Long estadoId) {
         try {
-            estadoRepository.remover(estadoId);
+            Estado estado= estadoRepository.getReferenceById(estadoId);
+            estadoRepository.delete(estado);
 
         } catch (EmptyResultDataAccessException e) {
             throw new EntidadeNaoEncontradaException(
@@ -39,6 +40,6 @@ public class EstadoService {
     }
 
     public Estado buscar(Long estadoId) {
-        return estadoRepository.buscar(estadoId);
+        return estadoRepository.getReferenceById(estadoId);
     }
 }

@@ -17,12 +17,13 @@ public class CozinhaService {
     private CozinhaRepository cozinhaRepository;
 
     public Cozinha salvar(Cozinha cozinha) {
-       return cozinhaRepository.salvar(cozinha);
+       return cozinhaRepository.save(cozinha);
     }
 
     public void excluir(Long cozinhaId){
         try {
-            cozinhaRepository.remover(cozinhaId);
+            Cozinha cozinha = cozinhaRepository.getReferenceById(cozinhaId);
+            cozinhaRepository.delete(cozinha);
         }catch (EmptyResultDataAccessException e){
             throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de cozinha para esse id"));
         }catch (DataIntegrityViolationException e){
@@ -31,10 +32,10 @@ public class CozinhaService {
     }
 
     public Cozinha buscar(Long cozinhaId) {
-        return cozinhaRepository.buscar(cozinhaId);
+        return cozinhaRepository.getReferenceById(cozinhaId);
     }
 
     public List<Cozinha> get() {
-        return cozinhaRepository.listar();
+        return cozinhaRepository.findAll();
     }
 }
