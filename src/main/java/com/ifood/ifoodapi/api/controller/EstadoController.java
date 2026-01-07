@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/estados")
@@ -41,9 +42,9 @@ public class EstadoController {
 
     @GetMapping("/{estadoId}")
     public ResponseEntity<Estado> buscar (@PathVariable Long estadoId){
-        Estado estado= estadoService.buscar(estadoId);
-        if(estado != null){
-            return ResponseEntity.ok().body(estado);
+        Optional<Estado> estado= estadoService.buscar(estadoId);
+        if(estado.isPresent()){
+            return ResponseEntity.ok().body(estado.get());
         }
         return ResponseEntity.notFound().build();
     }
@@ -51,11 +52,11 @@ public class EstadoController {
     @PutMapping("/{estadoId}")
     public ResponseEntity<?> atualizar(@PathVariable Long estadoId, @RequestBody Estado estado){
         try {
-            Estado estadoAtual = estadoService.buscar(estadoId);
-            if(estadoId != null){
-                BeanUtils.copyProperties(estado,estadoAtual,"id");
-                estadoAtual = estadoService.salvar(estadoAtual);
-                return ResponseEntity.ok().body(estadoAtual);
+            Optional<Estado> estadoAtual = estadoService.buscar(estadoId);
+            if(estadoAtual.isPresent()){
+                BeanUtils.copyProperties(estado,estadoAtual.get(),"id");
+                Estado estadoAtualizado = estadoService.salvar(estadoAtual.get());
+                return ResponseEntity.ok().body(estadoAtualizado);
             }
         }catch (EntidadeNaoEncontradaException e){
             return ResponseEntity.badRequest().body(e.getMessage());

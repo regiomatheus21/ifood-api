@@ -9,7 +9,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CozinhaService {
@@ -31,8 +33,8 @@ public class CozinhaService {
         }
     }
 
-    public Cozinha buscar(Long cozinhaId) {
-        return cozinhaRepository.getReferenceById(cozinhaId);
+    public Optional<Cozinha> buscar(Long cozinhaId) {
+        return cozinhaRepository.findById(cozinhaId);
     }
 
     public List<Cozinha> get() {

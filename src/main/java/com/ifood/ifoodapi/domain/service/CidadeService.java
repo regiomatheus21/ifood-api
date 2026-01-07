@@ -25,7 +25,7 @@ public class CidadeService {
     @Transactional
     public Cidade salvar(Cidade cidade) {
         Long estadoId = cidade.getEstado().getId();
-        Optional<Estado> estado =Optional.of(estadoRepository.buscar(estadoId));
+        Optional<Estado> estado =estadoRepository.findById(estadoId);
         if(!estado.isPresent()){
             throw new EntidadeNaoEncontradaException(
                     String.format("Nao existe cadastro de estado para esse id %d",estadoId));

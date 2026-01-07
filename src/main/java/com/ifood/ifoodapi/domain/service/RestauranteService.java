@@ -19,15 +19,11 @@ public class RestauranteService {
     @Autowired
     private CozinhaRepository cozinhaRepository;
     public Restaurante adicionar(Restaurante restaurante) {
-        Cozinha cozinha = cozinhaRepository.getReferenceById(restaurante.getCozinha().getId());
-        if(cozinha!=null){
-            restaurante.setCozinha(cozinha);
-        }else{
-            throw new EntidadeNaoEncontradaException(String.format("Cozinha nao foi encontrada com esse id: %d",restaurante.getCozinha().getId()));
-        }
+        Cozinha cozinha = cozinhaRepository.findById(restaurante.getCozinha().getId())
+                .orElseThrow(() -> new EntidadeNaoEncontradaException(String.format("Cozinha nao foi encontrada com esse id: %d",restaurante.getCozinha().getId())));
+                restaurante.setCozinha(cozinha);
         return restauranteRepository.save(restaurante);
     }
-
     public void deletar(Long restauranteId) {
         Optional<Restaurante> rest = Optional.ofNullable( restauranteRepository.getReferenceById(restauranteId));
         if(rest.isPresent()){
@@ -39,7 +35,7 @@ public class RestauranteService {
         return restauranteRepository.findAll();
     }
 
-    public Restaurante buscar(Long restauranteId) {
-       return restauranteRepository.getReferenceById(restauranteId);
+    public Optional<Restaurante> buscar(Long restauranteId) {
+       return restauranteRepository.findById(restauranteId);
     }
 }

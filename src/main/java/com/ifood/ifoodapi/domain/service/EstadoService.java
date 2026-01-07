@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EstadoService {
@@ -39,7 +40,7 @@ public class EstadoService {
         }
     }
 
-    public Estado buscar(Long estadoId) {
-        return estadoRepository.getReferenceById(estadoId);
+    public Optional<Estado> buscar(Long estadoId) {
+        return estadoRepository.findById(estadoId);
     }
 }
