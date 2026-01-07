@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EstadoService {
@@ -18,27 +19,28 @@ public class EstadoService {
     private EstadoRepository estadoRepository;
 
     public List<Estado> listar() {
-       return estadoRepository.listar();
+       return estadoRepository.findAll();
     }
 
     public Estado salvar(Estado estado) {
-        return estadoRepository.salvar(estado);
+        return estadoRepository.save(estado);
     }
     public void excluir(Long estadoId) {
         try {
-            estadoRepository.remover(estadoId);
-
+            Optional<Estado> estado= estadoRepository.findById(estadoId);
+            if(estado.isPresent()){
+                estadoRepository.delete(estado.get());
+            }
         } catch (EmptyResultDataAccessException e) {
             throw new EntidadeNaoEncontradaException(
                     String.format("Não existe um cadastro de estado com código %d", estadoId));
-
         } catch (DataIntegrityViolationException e) {
             throw new EntidadeEmUsoException(
                     String.format("Estado de código %d não pode ser removido, pois está em uso", estadoId));
         }
     }
 
-    public Estado buscar(Long estadoId) {
-        return estadoRepository.buscar(estadoId);
+    public Optional<Estado> buscar(Long estadoId) {
+        return estadoRepository.findById(estadoId);
     }
 }

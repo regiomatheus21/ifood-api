@@ -8,7 +8,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("v1/cozinha")
@@ -55,10 +55,10 @@ public class CozinhaController {
         }
     }
     @GetMapping("/{cozinhaId}")
-    public ResponseEntity<Cozinha> getById(@PathVariable Long cozinhaId){
-            Cozinha cozinha = cozinhaService.buscar(cozinhaId);
-            if(cozinha != null){
-                return ResponseEntity.ok(cozinha);
+    public ResponseEntity<Cozinha> buscar(@PathVariable Long cozinhaId){
+            Optional<Cozinha> cozinha = cozinhaService.buscar(cozinhaId);
+            if(cozinha.isPresent()){
+                return ResponseEntity.ok(cozinha.get());
             }
             return ResponseEntity.notFound().build();
     }
@@ -74,11 +74,11 @@ public class CozinhaController {
 
     @PutMapping("/{cozinhaId}")
     public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId,@RequestBody Cozinha cozinha){
-        Cozinha cozinhaAtual = cozinhaService.buscar(cozinhaId);
-        if(cozinhaAtual!=null){
-            BeanUtils.copyProperties(cozinha,cozinhaAtual,"id");
-            cozinhaAtual = cozinhaService.salvar(cozinhaAtual);
-            return ResponseEntity.ok(cozinhaAtual);
+        Optional<Cozinha> cozinhaAtual = cozinhaService.buscar(cozinhaId);
+        if(cozinhaAtual.isPresent()){
+            BeanUtils.copyProperties(cozinha,cozinhaAtual.get(),"id");
+            Cozinha cozinhaAtualizada = cozinhaService.salvar(cozinhaAtual.get());
+            return ResponseEntity.ok(cozinhaAtualizada);
         }
         return ResponseEntity.notFound().build();
     }

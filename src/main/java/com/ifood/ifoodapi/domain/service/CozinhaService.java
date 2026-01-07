@@ -9,7 +9,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CozinhaService {
@@ -17,12 +19,13 @@ public class CozinhaService {
     private CozinhaRepository cozinhaRepository;
 
     public Cozinha salvar(Cozinha cozinha) {
-       return cozinhaRepository.salvar(cozinha);
+       return cozinhaRepository.save(cozinha);
     }
 
     public void excluir(Long cozinhaId){
         try {
-            cozinhaRepository.remover(cozinhaId);
+            Optional<Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
+            cozinhaRepository.delete(cozinha.get());
         }catch (EmptyResultDataAccessException e){
             throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de cozinha para esse id"));
         }catch (DataIntegrityViolationException e){
@@ -30,11 +33,11 @@ public class CozinhaService {
         }
     }
 
-    public Cozinha buscar(Long cozinhaId) {
-        return cozinhaRepository.buscar(cozinhaId);
+    public Optional<Cozinha> buscar(Long cozinhaId) {
+        return cozinhaRepository.findById(cozinhaId);
     }
 
     public List<Cozinha> get() {
-        return cozinhaRepository.listar();
+        return cozinhaRepository.findAll();
     }
 }
