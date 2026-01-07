@@ -25,16 +25,14 @@ public class RestauranteService {
         return restauranteRepository.save(restaurante);
     }
     public void deletar(Long restauranteId) {
-        Optional<Restaurante> rest = Optional.ofNullable( restauranteRepository.getReferenceById(restauranteId));
-        if(rest.isPresent()){
-            restauranteRepository.delete(rest.get());
-        }
+        Restaurante rest =restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException(String.format("Restaurante nao encontrado")));
+            restauranteRepository.delete(rest);
     }
 
     public List<Restaurante> listar() {
         return restauranteRepository.findAll();
     }
-
     public Optional<Restaurante> buscar(Long restauranteId) {
        return restauranteRepository.findById(restauranteId);
     }

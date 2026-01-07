@@ -24,8 +24,8 @@ public class CozinhaService {
 
     public void excluir(Long cozinhaId){
         try {
-            Cozinha cozinha = cozinhaRepository.getReferenceById(cozinhaId);
-            cozinhaRepository.delete(cozinha);
+            Optional<Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
+            cozinhaRepository.delete(cozinha.get());
         }catch (EmptyResultDataAccessException e){
             throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de cozinha para esse id"));
         }catch (DataIntegrityViolationException e){

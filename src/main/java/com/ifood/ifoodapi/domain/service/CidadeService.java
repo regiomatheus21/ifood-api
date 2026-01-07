@@ -25,21 +25,16 @@ public class CidadeService {
     @Transactional
     public Cidade salvar(Cidade cidade) {
         Long estadoId = cidade.getEstado().getId();
-        Optional<Estado> estado =estadoRepository.findById(estadoId);
-        if(!estado.isPresent()){
-            throw new EntidadeNaoEncontradaException(
-                    String.format("Nao existe cadastro de estado para esse id %d",estadoId));
-        }
-        cidade.setEstado(estado.get());
+        Estado estado =estadoRepository.findById(estadoId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException(String.format("Nao existe cadastro de estado para esse id %d",estadoId)));
+        cidade.setEstado(estado);
         return cidadeRepository.save(cidade);
     }
-
-    public Cidade buscar(Long cidadeId) {
-        return cidadeRepository.getReferenceById(cidadeId);
+    public Optional<Cidade> buscar(Long cidadeId) {
+        return cidadeRepository.findById(cidadeId);
     }
-
     public void excluir(Long cidadeId) {
-       Optional<Cidade> cidade = Optional.of(cidadeRepository.getReferenceById(cidadeId));
+       Optional<Cidade> cidade = cidadeRepository.findById(cidadeId);
         if (cidade.isPresent()){
             cidadeRepository.delete(cidade.get());
         }
@@ -48,14 +43,4 @@ public class CidadeService {
     public List<Cidade> listar() {
         return cidadeRepository.findAll();
     }
-
-//    public Cidade atualizar(Long cidadeId, Cidade cidade) {
-//        Optional<Cidade> cidadeAtual = Optional.ofNullable(cidadeRepository.buscar(cidadeId));
-//        if(cidadeAtual.isPresent()){
-//           BeanUtils.copyProperties(cidade,cidadeAtual,"id");
-//            Cidade cidadeAtualizada = cidadeRepository.salvar(cidadeAtual.get());
-//            return cidadeAtualizada;
-//
-//        }
-//    }
 }

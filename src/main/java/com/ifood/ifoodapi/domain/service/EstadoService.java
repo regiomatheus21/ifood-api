@@ -27,13 +27,13 @@ public class EstadoService {
     }
     public void excluir(Long estadoId) {
         try {
-            Estado estado= estadoRepository.getReferenceById(estadoId);
-            estadoRepository.delete(estado);
-
+            Optional<Estado> estado= estadoRepository.findById(estadoId);
+            if(estado.isPresent()){
+                estadoRepository.delete(estado.get());
+            }
         } catch (EmptyResultDataAccessException e) {
             throw new EntidadeNaoEncontradaException(
                     String.format("Não existe um cadastro de estado com código %d", estadoId));
-
         } catch (DataIntegrityViolationException e) {
             throw new EntidadeEmUsoException(
                     String.format("Estado de código %d não pode ser removido, pois está em uso", estadoId));
