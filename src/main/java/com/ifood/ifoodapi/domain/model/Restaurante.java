@@ -1,5 +1,6 @@
 package com.ifood.ifoodapi.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,6 +27,7 @@ public class Restaurante {
 
     @Column(name = "taxa_frete",nullable = false)
     private BigDecimal taxaFrete;
+
 
     @ManyToOne
     @JoinColumn(name = "cozinha_id",nullable = false)
