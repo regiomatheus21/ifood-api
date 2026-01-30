@@ -59,7 +59,7 @@ public class RestauranteController {
         try {
             Optional<Restaurante> restauranteAtual = restauranteService.buscar(restauranteId);
             if(restauranteAtual!=null){
-                BeanUtils.copyProperties(restaurante,restauranteAtual.get(),"id");
+                BeanUtils.copyProperties(restaurante,restauranteAtual.get(),"id","endereco");
                 Restaurante restauranteAtualizada = restauranteService.adicionar(restauranteAtual.get());
                 return ResponseEntity.ok(restauranteAtualizada);
             }
@@ -88,4 +88,5 @@ public class RestauranteController {
             ReflectionUtils.setField(field,restauranteDestino,novoValor);
         });
     }
+
 }
