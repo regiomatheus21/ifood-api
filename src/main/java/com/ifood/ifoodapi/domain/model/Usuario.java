@@ -8,7 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -32,11 +35,8 @@ public class Usuario {
     @Column(nullable = false)
     private LocalDateTime dataCadastro;
 
-    @JsonIgnoreProperties("hibernateLazyInitializer")
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(nullable = false)
+    @ManyToMany
+    @JoinTable(name = "usuario_grupo",joinColumns = @JoinColumn(name = "usuario_id"),
+        inverseJoinColumns = @JoinColumn (name = "grupo_id"))
     private List<Grupo> grupos = new ArrayList<>();
-
-
 }
