@@ -15,6 +15,9 @@ import java.util.Optional;
 
 @Service
 public class CozinhaService {
+    public static final String MSG_CADASTRO_COZINHA_NAO_ENCONTRADO = "Não existe um cadastro de cozinha para esse id";
+    public static final String MSG_COZINHA_NAO_ENCONTRADO = "Cozinha nao encontrada";
+    public static final String MSG_DELETE_COZINHA = "Cozinha nao pode ser removida, esta em uso";
     @Autowired
     private CozinhaRepository cozinhaRepository;
 
@@ -27,14 +30,15 @@ public class CozinhaService {
             Optional<Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
             cozinhaRepository.delete(cozinha.get());
         }catch (EmptyResultDataAccessException e){
-            throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de cozinha para esse id"));
+            throw new EntidadeNaoEncontradaException(String.format(MSG_CADASTRO_COZINHA_NAO_ENCONTRADO));
         }catch (DataIntegrityViolationException e){
-            throw new EntidadeEmUsoException(String.format("Cozinha nao pode ser removida, esta em uso"));
+            throw new EntidadeEmUsoException(String.format(MSG_DELETE_COZINHA));
         }
     }
 
-    public Optional<Cozinha> buscar(Long cozinhaId) {
-        return cozinhaRepository.findById(cozinhaId);
+    public Cozinha buscar(Long cozinhaId) {
+        return cozinhaRepository.findById(cozinhaId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException(MSG_COZINHA_NAO_ENCONTRADO));
     }
 
     public List<Cozinha> get() {
