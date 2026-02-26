@@ -1,6 +1,8 @@
 package com.ifood.ifoodapi.domain.service;
 
+import com.ifood.ifoodapi.domain.exception.CidadeNaoEncontradaException;
 import com.ifood.ifoodapi.domain.exception.EntidadeNaoEncontradaException;
+import com.ifood.ifoodapi.domain.exception.EstadoNaoEncontradaException;
 import com.ifood.ifoodapi.domain.model.Cidade;
 import com.ifood.ifoodapi.domain.model.Estado;
 import com.ifood.ifoodapi.domain.repository.CidadeRepository;
@@ -26,12 +28,13 @@ public class CidadeService {
     public Cidade salvar(Cidade cidade) {
         Long estadoId = cidade.getEstado().getId();
         Estado estado =estadoRepository.findById(estadoId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException(String.format("Nao existe cadastro de estado para esse id %d",estadoId)));
+                .orElseThrow(() -> new EstadoNaoEncontradaException(estadoId));
         cidade.setEstado(estado);
         return cidadeRepository.save(cidade);
     }
-    public Optional<Cidade> buscar(Long cidadeId) {
-        return cidadeRepository.findById(cidadeId);
+    public Cidade buscar(Long cidadeId) {
+        return cidadeRepository.findById(cidadeId)
+                .orElseThrow(() -> new CidadeNaoEncontradaException(cidadeId));
     }
     public void excluir(Long cidadeId) {
        Optional<Cidade> cidade = cidadeRepository.findById(cidadeId);

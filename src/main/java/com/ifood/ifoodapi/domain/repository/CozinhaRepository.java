@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CozinhaRepository extends JpaRepository<Cozinha,Long> {
-
+    boolean existsByNome(String nome);
 
 }

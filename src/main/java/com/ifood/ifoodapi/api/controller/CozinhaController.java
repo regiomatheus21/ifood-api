@@ -1,5 +1,6 @@
 package com.ifood.ifoodapi.api.controller;
 
+import com.ifood.ifoodapi.domain.exception.CozinhaNaoEncontradaException;
 import com.ifood.ifoodapi.domain.exception.EntidadeEmUsoException;
 import com.ifood.ifoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.ifood.ifoodapi.domain.model.Cozinha;
@@ -39,16 +40,17 @@ public class CozinhaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void adicionar(@RequestBody Cozinha cozinha){
-        cozinhaService.salvar(cozinha);
+    public Cozinha adicionar(@RequestBody Cozinha cozinha){
+       return cozinhaService.salvar(cozinha);
     }
+
     @DeleteMapping("/{cozinhaId}")
     public ResponseEntity<Cozinha> remover(@PathVariable Long cozinhaId){
         try {
             cozinhaService.excluir(cozinhaId);
             return ResponseEntity.noContent().build();
         }catch (EntidadeNaoEncontradaException e){
-            return ResponseEntity.notFound().build();
+            throw new CozinhaNaoEncontradaException(cozinhaId);
         }
         catch (EntidadeEmUsoException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
