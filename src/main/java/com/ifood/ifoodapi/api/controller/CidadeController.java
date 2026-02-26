@@ -1,7 +1,9 @@
 package com.ifood.ifoodapi.api.controller;
 
+import com.ifood.ifoodapi.domain.exception.CidadeNaoEncontradaException;
 import com.ifood.ifoodapi.domain.exception.EntidadeEmUsoException;
 import com.ifood.ifoodapi.domain.exception.EntidadeNaoEncontradaException;
+import com.ifood.ifoodapi.domain.exception.EstadoNaoEncontradaException;
 import com.ifood.ifoodapi.domain.model.Cidade;
 import com.ifood.ifoodapi.domain.service.CidadeService;
 import org.springframework.beans.BeanUtils;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/cidades")
@@ -36,31 +38,27 @@ public class CidadeController {
         try {
             cidade = cidadeService.salvar(cidade);
             return ResponseEntity.status(HttpStatus.CREATED).body(cidade);
-        }catch (EntidadeNaoEncontradaException e){
+        }catch (EstadoNaoEncontradaException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/{cidadeId}")
     public ResponseEntity<Cidade> buscar (@PathVariable Long cidadeId){
-        Optional<Cidade> cidade= cidadeService.buscar(cidadeId);
-       if(cidade.isPresent()){
-           return ResponseEntity.ok().body(cidade.get());
-       }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().body(cidadeService.buscar(cidadeId));
     }
 
     @PutMapping("/{cidadeId}")
     public ResponseEntity<?> atualizar(@PathVariable Long cidadeId, @RequestBody Cidade cidade){
         try {
           //  Cidade cidadeAtual1 = cidadeService.atualizar(cidadeId,cidade);
-            Optional<Cidade> cidadeAtual = cidadeService.buscar(cidadeId);
-            if(cidadeAtual.isPresent()){
-                BeanUtils.copyProperties(cidade,cidadeAtual.get(),"id");
-                Cidade cidadeAtualizada = cidadeService.salvar(cidadeAtual.get());
+            Cidade cidadeAtual = cidadeService.buscar(cidadeId);
+            if(cidadeAtual != null){
+                BeanUtils.copyProperties(cidade,cidadeAtual,"id");
+                Cidade cidadeAtualizada = cidadeService.salvar(cidadeAtual);
                 return ResponseEntity.ok().body(cidadeAtualizada);
             }
-        }catch (EntidadeNaoEncontradaException e){
+        }catch (EstadoNaoEncontradaException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.notFound().build();
@@ -71,10 +69,19 @@ public class CidadeController {
             cidadeService.excluir(cidadeId);
             return ResponseEntity.noContent().build();
         }catch (EntidadeNaoEncontradaException e){
-            return ResponseEntity.notFound().build();
+            throw new CidadeNaoEncontradaException(cidadeId);
 
         }catch (EntidadeEmUsoException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
+    @ExceptionHandler(EntidadeNaoEncontradaException.class)
+    public ResponseEntity<?> tratarEntidadeNaoEncontradaException(EntidadeNaoEncontradaException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+
+
+
+
 }
